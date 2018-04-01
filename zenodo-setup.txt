@@ -26,22 +26,32 @@ RUN plugin install file:///src/elasticsearch-HQ-2.0.3.zip
 RUN plugin install mapper-attachments
 
 
-(4) Check and clean OS default python environment.  Uninstall python2 and keep/install python3 only.
+(3) Check and clean OS default python environment.  download Anaconda2-5.1.0-Linux-x86_64.sh, Anaconda3-5.1.0-Linux-x86_64.sh and install, but I want get python version == 3.5, so I run command "conda install python=3.5" and I got a error as below:
+conda install python=3.5
+Solving environment: failed
 
-(5) Install 2 python modules: virtualenv and virtualenvwrapper.
-pip install virtualenv
-pip install virtualenvwrapper
+UnsatisfiableError: The following specifications were found to be in conflict:
+  - python=3.5
+  - requests -> chardet[version='>=3.0.2,<3.1.0'] -> python[version='>=3.6,<3.7.0a0']
+Use "conda info <package>" to see the dependencies for each package.
+I haven't never met this error on other computer, so I download Anaconda3-4.1.1-Linux-x86_64.sh again
+and install.
 
-(6) Install nodejs on host os
-curl -sL https://deb.nodesource.com/setup_6.x | bash - && apt-get -qy install --fix-missing --no-install-recommends nodejs 
+(5) create vritual env.
+conda create -n zenodo python=3.5.2
+and add 清华加速镜像：
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+conda config --set show_channel_urls yes
+
+(6) Install npm on host os
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.8/install.sh | bash
+add native mirror:
+npm install -g cnpm --registry=https://registry.npm.taobao.org
+
 
 (7) Create virtual python environment
-mkdir /home/envs
-### Append following 3 lines to the end of ~/.bashrc file, and do "source ~/.bashrc" after saving the file.
-    export WORKON_HOME=home/.virtualenvs
-    export PROJECT_HOME=home/envs
-    source /usr/local/bin/virtualenvwrapper.sh
-mkvirtualenv zenodo
+source activate zenodo
 
 (8) Build zenodo on host os, this should be done under virtual python environment created in step7.
 (zenodo)$
@@ -50,6 +60,16 @@ mkvirtualenv zenodo
 (zenodo)$ pip install -e .[all,postgresql,elasticsearch2]
 (zenodo)$ ./scripts/setup-npm.sh
 (zenodo)$ ./scripts/setup-assets.sh
+first I meet error:
+because I don't use virtuaimport cairo  # pycairo
+ImportError: No module named 'cairo'
+This command "sudo apt-get install libcairo2" will solve this problem
+because I don't use mkvirtualenv, so I will meet 
+./scripts/setup-assets.sh: line 29: cd: /var/instance/static: No such file or directory
+and I directly run 
+npm install
+in directory ~/anaconda3/envs/zenodo/var/instance/static
+will be ok
 
 (9) Initialize zenodo:
 (zenodo)$ ./scripts/init.sh
