@@ -59,3 +59,37 @@ Caused by: org.apache.avro.AvroTypeException: Expected start-union. Got VALUE_NU
 {"name": "Ben", "favorite_number": 7, "favorite_color": "red"}
 {"name": "larry", "favorite_number": 6, "favorite_color": "green"}
 
+(5) After installing Filebeat, you need to configure it. Open the filebeat.yml file located in your Filebeat 
+installation directory
+filebeat.prospectors:
+- type: log
+  paths:
+    - /path/to/file/logstash-tutorial.log 
+output.logstash:
+  hosts: ["localhost:5044"]
+  
+(6) At the data source machine, run Filebeat with the following command:
+./filebeat -e -c filebeat.yml -d "publish"
+
+(7) Configuring Logstash for Filebeat Input
+input {
+    beats {
+        port => "5044"
+    }
+}
+# The filter part of this file is commented out to indicate that it is
+# optional.
+# filter {
+#
+# }
+
+output {
+  kafka {
+    codec => json
+    bootstrap_servers => "localhost:9092"
+    topic_id => "test"
+  }
+}
+
+(7) If the configuration file passes the configuration test, start Logstash with the following command:
+bin/logstash -f first-pipeline.conf --config.reload.automatic
