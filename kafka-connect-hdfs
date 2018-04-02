@@ -1,0 +1,41 @@
+(1) First, start all the necessary services using Confluent CLI
+$ confluent start
+
+(2) Start hdfs in directory hadoop-2.8.3
+$ sbin/start-dfs.sh
+
+(3) Start yarn
+$ sbin/start-yarn.sh
+
+(4)Start the Avro console producer to import a few records to Kafka
+./bin/kafka-avro-console-producer --broker-list localhost:9092 --topic test_hdfs \
+--property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}]}'
+Then in the console producer, type in:
+{"f1": "value1"}
+{"f1": "value2"}
+{"f1": "value3"}
+
+Try others
+./bin/kafka-avro-console-producer --broker-list localhost:9092 --topic test_hdfs \
+--property value.schema='{"type":"record","name":"myrecord","fields":[{"name":"f1","type":"string"}, {"name":"f2","type":"string"}]}'
+Then in the console producer, type in
+{"f1": "value1", "f2": "value4"}
+{"f1": "value2", "f2": "value5"}
+{"f1": "value3", "f2": "value6"}
+
+./bin/kafka-avro-console-producer --broker-list localhost:9092 --topic test_hdfs \
+--property value.schema='{"namespace": "example.avro",
+ "type": "record",
+ "name": "User",
+ "fields": [
+     {"name": "name", "type": "string"},
+     {"name": "favorite_number",  "type": ["int", "null"]},
+     {"name": "favorite_color", "type": ["string", "null"]}
+ ]
+}'
+Then in the console producer, type in
+{"name": "Alyssa", "favorite_number": 256}
+{"name": "Ben", "favorite_number": 7, "favorite_color": "red"}
+{"name": "larry", "favorite_number": 7, "favorite_color": "green"}
+
+
