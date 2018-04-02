@@ -19,14 +19,17 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 问题2：阿里云访问github速度过慢导致RUN plugin install royrusso/elasticsearch-HQ/v2.0.3总是失败：
 docker运行的应该是elasticsearch的内部命令，运行该命令之后会返回几个网址，挑选合适的下载，实际上只有一个网址可用，https://github.com/ElasticHQ/elasticsearch-HQ/archive/v2.0.3.zip，本地直接下载后，上传到/root/src/zenodo/docker/es/src下，这个有严格的要求，需要位于docker文件所在的根目录。然后再dock/es/Dockerfile里添加本地文件和容器内的映射关系，修改完代码如下：
-
 FROM elasticsearch:2
 ADD ./src /src
 RUN plugin install file:///src/elasticsearch-HQ-2.0.3.zip
 RUN plugin install mapper-attachments
 
+问题3： intall docker-compose
 sudo curl -L https://github.com/docker/compose/releases/download/1.20.1/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
 
+问题4：如果不是root用户
+You need to add user into docker group. by 'sudo gpasswd -a xxxx docker' (xxx is your user name)
+Then restart your computer.
 
 (3) Check and clean OS default python environment.  download Anaconda2-5.1.0-Linux-x86_64.sh, Anaconda3-5.1.0-Linux-x86_64.sh and install, but I want get python version == 3.5, so I run command "conda install python=3.5" and I got a error as below:
 conda install python=3.5
