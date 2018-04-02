@@ -38,6 +38,9 @@ UnsatisfiableError: The following specifications were found to be in conflict:
 Use "conda info <package>" to see the dependencies for each package.
 I haven't never met this error on other computer, so I download Anaconda3-4.1.1-Linux-x86_64.sh again
 and install.
+wget https://repo.continuum.io/archive/Anaconda3-4.1.1-Linux-x86_64.sh
+chmod +x Anaconda3-4.1.1-Linux-x86_64.sh
+./Anaconda3-4.1.1-Linux-x86_64.sh
 
 (4) create vritual env.
 conda create -n zenodo python=3.5.2
