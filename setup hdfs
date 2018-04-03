@@ -1,0 +1,71 @@
+(1)hdfs rsa to avoid password in next login
+cd ~/.ssh
+ssh-keygen -t rsa 
+cat id_rsa.pub >> authorized_keys
+chmod 644 authorized_keys
+
+(2)export JAVA_HOME= in hadoop-env.sh
+
+(3)config core-site.xml
+<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://ubuntu:9000</value>
+    </property>
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>file:/home/hdfs/hadoop/tmp</value>
+        <description>Abasefor other temporary directories.</description>
+    </property>
+</configuration>
+
+(4)config hdfs-site.xml
+<configuration>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:/home/hdfs/hadoop/name</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:/home/hdfs/hadoop/data</value>
+    </property>
+    <property>
+        <name>dfs.replication</name>
+        <value>3</value>
+    </property>
+    <property>
+        <name>dfs.webhdfs.enabled</name>
+        <value>true</value>
+    </property>
+        <property>
+        <name>dfs.permissions</name>
+        <value>false</value>
+    </property>
+</configuration>
+
+(5)bin/hdfs namenode -format
+This step you had better delete all files in dfs.datanode.data.dir, dfs.namenode.name.dir and hadoop.tmp.dir
+
+(6)Now I can start dfs by command sbin/start-dfs.sh and you can check if the config is useful by command jps and will see
+DataNode and NameNode.
+This step I met a error that I could't start NameNode because I set 
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://ubuntu:9000</value>
+    </property>
+ by external address. this can be set by internal address and localhost.
+ I solved this error by checking logs.
+ and you also can check on website localhost:50070
+ 
+ (7) Next steps I didn't meet any trouble, config  mapred-site.xml 
+ <configuration>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+</configuration>
+ 
+(8)sbin/start-yarn.sh
+you can check on http://localhost:8088/
+
+(9)you can stop them by sbin/stop-all.sh
