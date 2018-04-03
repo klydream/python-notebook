@@ -38,4 +38,18 @@ If I want to use avro again, I should continue to modify file of logstash-codec-
 
 (4)bin/logstash -f first-pipeline.conf --config.reload.automatic
 
+(5)Install plugin Avro by command "bin/logstash-plugin install logstash-codec-avro" and config by
+input {
+  kafka {
+    codec => avro {
+        schema_uri => "/tmp/schema.avsc"
+    }
+  }
+}
+or install your own code by 
+a. Edit Logstash Gemfile and add the local plugin path, for example:
+gem "logstash-codec-avro", :path => "/your/local/logstash-codec-avro"
+b. bin/logstash-plugin install --no-verify
+
+
 
