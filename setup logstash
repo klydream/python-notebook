@@ -1,0 +1,35 @@
+I didn't meet any trouble on installing this program 
+Refering to https://www.elastic.co/guide/en/logstash/6.2/advanced-pipeline.html
+(1)Install firebeat and config in filebeat.yml
+filebeat.prospectors:
+- type: log
+  paths:
+    - /path/to/file/logstash-tutorial.log 
+output.logstash:
+  hosts: ["localhost:5044"]
+  
+(2)Start ./filebeat -e -c filebeat.yml -d "publish"
+
+(3)Install logstash and config in 
+input {
+    beats {
+        port => "5044"
+    }
+}
+# The filter part of this file is commented out to indicate that it is
+# optional.
+# filter {
+#
+# }
+output {
+    stdout { codec => json }
+}
+output {
+  kafka {
+    codec => json
+    bootstrap_servers => "localhost:9092"
+    topic_id => "test"
+  }
+}
+To connect with Kafka, I was going to use Avro, but I found 
+
