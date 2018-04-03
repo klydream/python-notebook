@@ -31,5 +31,11 @@ output {
     topic_id => "test"
   }
 }
-To connect with Kafka, I was going to use Avro, but I found 
+To connect with Kafka, I was going to use Avro, but I found the codec mode of logstash-codec-avro is not same with kafka
+even if I false Base64. So I only can use json.
+
+If I want to use avro again, I should continue to modify file of logstash-codec-avro.
+
+(4)bin/logstash -f first-pipeline.conf --config.reload.automatic
+
 
