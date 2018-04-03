@@ -1,2 +1,35 @@
-Avro spec address:
+Avro spec address:http://avro.apache.org/docs/current/spec.pdf
 Compatibility of Avro is not good even if it's good at big data.
+And under python enviroment it can work as below:
+{"namespace": "log.avro",
+ "type": "record",
+ "name": "log",
+ "fields": [
+     {"name": "offset", "type": "int"},
+     {"name": "source",  "type": "string"},
+     {"name": "prospector", "type": {"type": "map", "values": "string"}},
+     {"name": "beat", "type": {"name": "log_beat", "type": "record", "fields": [
+        {"name": "version", "type": "string"},
+        {"name": "hostname",  "type": "string"},
+        {"name": "name", "type": "string"}]}},
+     {"name": "host",  "type": "string"},
+     {"name": "@timestamp",  "type": "string"},
+     {"name": "message",  "type": "string"},
+     {"name": "tags",  "type": {"type": "array", "items": "string"}},
+     {"name": "@version",  "type": "string"}
+ ]
+}
+
+{"offset":389,
+"source":"/home/larry/Downloads/test.log",
+"prospector":{"type":"log"},
+"beat":{"version":"6.2.3",
+"hostname":"DESKTOP-TDMVSK8",
+"name":"DESKTOP-TDMVSK8"},
+"host":"DESKTOP-TDMVSK8",
+"@timestamp":"2018-04-02T14:51:32.326Z",
+"message":"{\"name\": \"Alyssa\", \"favorite_number\": 256}",
+"tags":["beats_input_codec_plain_applied"],
+"@version":"1"}
+
+But it can't work with kafka for @timestamp and @version.
