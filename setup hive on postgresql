@@ -1,0 +1,35 @@
+(1) Download postgresql library for hive
+wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
+(2) Download hive 
+ wget https://mirrors.tuna.tsinghua.edu.cn/apache/hive/hive-2.3.3/apache-hive-2.3.3-bin.tar.gz
+ tar xzf apache-hive-2.3.3-bin.tar.gz
+(3)edit .bashrc
+export HIVE_HOME="~/apache-hive-2.3.3-bin"
+export PATH=$HIVE_HOME/bin:$PATH
+(4)check JAVA_HOME and java version
+(5)check hadoop by jps
+7779 DataNode
+7619 NameNode
+7973 SecondaryNameNode
+8279 NodeManager
+8156 ResourceManager
+6127 Jps
+(6)start db postgresql
+sudo systemctl start docker
+docker-compose rm
+(a)Copy hive-schema-2.3.0.postgres.sql and hive-txn-schema-2.3.0.postgres.sql from 
+apache-hive-2.3.3-bin/scripts/metastore/upgrade/postgres
+(b)Edit hive-schema-2.3.0.postgres.sql and add address for hive-txn-schema-2.3.0.postgres.sql
+\i hive-txn-schema-2.3.0.postgres.sql; to \i /tmp/hive-txn-schema-2.3.0.postgres.sql;
+(c)Add to Dockerfile
+COPY ./hive-schema-2.3.0.postgres.sql /tmp/hive-schema-2.3.0.postgres.sql
+COPY ./hive-txn-schema-2.3.0.postgres.sql /tmp/hive-txn-schema-2.3.0.postgres.sql 
+and add psql -U hivemeta hivemeta -f /tmp/hive-schema-2.3.0.postgres.sql to sh
+(d)docker-compose rm
+(e)docker-compose build db
+(f)docker-compose up db
+docker ps
+docker exec -it 18dea9d7b9ee /bin/bash
+
+
+
