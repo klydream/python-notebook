@@ -93,3 +93,6 @@ output {
 
 (7) If the configuration file passes the configuration test, start Logstash with the following command:
 bin/logstash -f first-pipeline.conf --config.reload.automatic
+
+(8)confluent load hdfs-sink -d etc/kafka-connect-hdfs/quickstart-hdfs.properties
+confluent log connect
