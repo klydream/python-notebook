@@ -45,12 +45,12 @@ HADOOP_HOME=/home/larry/tools/hadoop-2.8.3
   </property>
   <property>
    <name>javax.jdo.option.ConnectionUserName</name>
-    <value>hivemeta</value>
+    <value>hive</value>
     <description>username to use againstmetastore database</description>
   </property>
   <property>
    <name>javax.jdo.option.ConnectionPassword</name>
-    <value>hivemeta</value>
+    <value>hive</value>
     <description>password to use againstmetastore database</description>
   </property>
   <property>
