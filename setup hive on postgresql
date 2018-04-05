@@ -101,9 +101,16 @@ hive> CREATE TABLE micmiu_blog (id INT, siteurl STRING);
 OK
 Time taken: 0.612 seconds
 hive> 
-
-
-
-
-
-
+(12)web test
+from pyhive import hive
+conn = hive.Connection(host='127.0.0.1', port=10000, database='default')
+pyhive.exc.OperationalError: TOpenSessionResp(serverProtocolVersion=9, status=TStatus(infoMessages=['*org.apache.hive.service.cli.HiveSQLException:Failed to open new session: java.lang.RuntimeException: org.apache.hadoop.ipc.RemoteException(org.apache.hadoop.security.authorize.AuthorizationException): User: larry is not allowed to impersonate hivemeta:14:13'
+modify core-site.xml as
+    <property>
+      <name>hadoop.proxyuser.larry.hosts</name>
+      <value>*</value>
+    </property>
+    <property>
+      <name>hadoop.proxyuser.larry.groups</name>
+      <value>*</value>
+    </property>
