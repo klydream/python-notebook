@@ -7,7 +7,7 @@ wget https://jdbc.postgresql.org/download/postgresql-9.4.1212.jar
 export HIVE_HOME="~/apache-hive-2.3.3-bin"
 export PATH=$HIVE_HOME/bin:$PATH
 (4)check JAVA_HOME and java version
-(5)check hadoop by jps
+(5)check hadoop by jps or format by "bin/hdfs namenode -format" and remember delete all files in hadoop namenode
 7779 DataNode
 7619 NameNode
 7973 SecondaryNameNode
@@ -30,6 +30,80 @@ and add psql -U hivemeta hivemeta -f /tmp/hive-schema-2.3.0.postgres.sql to sh
 (f)docker-compose up db
 docker ps
 docker exec -it 18dea9d7b9ee /bin/bash
+(7)vi apache-hive-2.3.3-bin/conf/hive-env.sh
+HADOOP_HOME=/home/larry/tools/hadoop-2.8.3
+(8)vi apache-hive-2.3.3-bin/conf/hive-site.xml
+  <property>
+   <name>javax.jdo.option.ConnectionURL</name>
+    <value>jdbc:postgresql://127.0.0.1:5432/hivemeta</value>
+    <description>JDBC connect string for aJDBC metastore</description>
+  </property>
+  <property>
+   <name>javax.jdo.option.ConnectionDriverName</name>
+    <value>org.postgresql.Driver</value>
+    <description>Driver class name for aJDBC metastore</description>
+  </property>
+  <property>
+   <name>javax.jdo.option.ConnectionUserName</name>
+    <value>hivemeta</value>
+    <description>username to use againstmetastore database</description>
+  </property>
+  <property>
+   <name>javax.jdo.option.ConnectionPassword</name>
+    <value>hivemeta</value>
+    <description>password to use againstmetastore database</description>
+  </property>
+  <property>
+      <name>hive.metastore.warehouse.dir</name>
+      <value>hdfs://localhost:9000/user/hive/warehouse</value>
+      <description>location of defaultdatabase for the warehouse</description>
+  </property>
+  <property>
+     <name>hive.exec.scratchdir</name>
+      <value>hdfs://localhost:9000/usr/hive/tmp</value>
+  </property>
+  <property>
+     <name>hive.metastore.schema.verification</name>
+      <value>false</value>
+  </property>
+(9)connect metadata sql of postgresql
+hive --service metastore -v
+2018-04-05 19:58:39: Starting Hive Metastore Server
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/ubuntu/apache-hive-2.3.3-bin/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/ubuntu/hadoop-2.8.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+Starting hive metastore on port 9083
+(10) start hive server
+hive --service hiveserver2
+2018-04-05 20:03:00: Starting HiveServer2
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/ubuntu/apache-hive-2.3.3-bin/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/ubuntu/hadoop-2.8.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+(11)test
+ubuntu@larry-ubuntu:~$ hive
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/home/ubuntu/apache-hive-2.3.3-bin/lib/log4j-slf4j-impl-2.6.2.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/home/ubuntu/hadoop-2.8.3/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.apache.logging.slf4j.Log4jLoggerFactory]
+
+Logging initialized using configuration in jar:file:/home/ubuntu/apache-hive-2.3.3-bin/lib/hive-common-2.3.3.jar!/hive-log4j2.properties Async: true
+Hive-on-MR is deprecated in Hive 2 and may not be available in the future versions. Consider using a different execution engine (i.e. spark, tez) or using Hive 1.X releases.
+hive> show databases;
+OK
+default
+Time taken: 3.768 seconds, Fetched: 1 row(s)
+hive> CREATE TABLE micmiu_blog (id INT, siteurl STRING);
+OK
+Time taken: 0.612 seconds
+hive> 
+
+
+
 
 
 
