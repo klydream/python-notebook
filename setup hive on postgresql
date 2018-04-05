@@ -114,3 +114,6 @@ modify core-site.xml as
       <name>hadoop.proxyuser.larry.groups</name>
       <value>*</value>
     </property>
+    
+beeline -u jdbc:hive2://localhost:10000/default
+
