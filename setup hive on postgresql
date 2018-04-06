@@ -66,6 +66,13 @@ HADOOP_HOME=/home/larry/tools/hadoop-2.8.3
      <name>hive.metastore.schema.verification</name>
       <value>false</value>
   </property>
+  
+hdfs dfs -mkdir -p /usr/hive/warehouse
+hdfs dfs -mkdir -p /usr/hive/log
+hdfs dfs -mkdir -p /usr/hive/tmp
+hdfs dfs -chmod 773 /usr/hive/warehouse
+hdfs dfs -chmod 773 /usr/hive/log
+hdfs dfs -chmod 773 /usr/hive/tmp
 (9)connect metadata sql of postgresql
 hive --service metastore -v
 2018-04-05 19:58:39: Starting Hive Metastore Server
