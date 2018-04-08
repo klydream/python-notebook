@@ -10,8 +10,11 @@ password-db = passwd
 (4)vim tools/svn/repository/conf/passwd
 [users]
 larry = 123456
-
 (5)vim tools/svn/repository/conf/authz
 [groups]
 admin = larry
 @larry = rw
+
+(7)svnserve -d -r /home/svn [--listen-host 192.168.1.16]
+(8)killall svnserve
+ps aux | grep svnserve
