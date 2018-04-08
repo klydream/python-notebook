@@ -96,3 +96,8 @@ bin/logstash -f first-pipeline.conf --config.reload.automatic
 
 (8)confluent load hdfs-sink -d etc/kafka-connect-hdfs/quickstart-hdfs.properties
 confluent log connect
+
+（9）If you want config broker, producer and consumer in different machines, you should edit 2 files:
+add zk externalIP to /etc/hosts
+add advertised.listener = externalIP:port to server.pro and zookeeper = zk:2181, and this place you can't use direct external IP, or you 
+will meeet error.
