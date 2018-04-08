@@ -1,0 +1,17 @@
+(1)sudo apt-get install subversion
+(2)mkdir tools/svn
+mkdir tools/svn/repository
+chmod -R 777 tools/svn/repository
+svnadmin create tools/svn/repository
+chmod -R 777 tools/svn/repository/db
+(3)vim tools/svn/repository/conf/svnserve.conf
+auth-access = write
+password-db = passwd
+(4)vim tools/svn/repository/conf/passwd
+[users]
+larry = 123456
+
+(5)vim tools/svn/repository/conf/authz
+[groups]
+admin = larry
+@larry = rw
