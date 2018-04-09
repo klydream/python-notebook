@@ -1,0 +1,18 @@
+{"duration":0,"origin_location":" 江西","net_mode":0,"post":0,"gender":0,"medicine_list":"奥美拉唑","phone_number":39070,"tag_time":" 2040-07-11 17:19:16","tag":"    反流性食管炎","age":26,"current_location":"黑龙江"}
+
+
+
+CREATE EXTERNAL TABLE if not exists record (
+  duration int,
+  origin_location string,
+  net_mode int,
+  post int,
+  gender int,
+  medicine_list string,
+  phone_number int,
+  tag_time string,
+  tag string,
+  age int,
+  current_location string)
+ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
+LOCATION 'hdfs://localhost:9000/topics/test/partition=0/';
