@@ -1,0 +1,69 @@
+Hive is very slow, so I want to try hive on spark
+(1)git clone https://github.com/apache/spark.git
+(2)./dev/make-distribution.sh --name "hadoop2-without-hive" --tgz "-Pyarn,hadoop-provided,hadoop-2.7,parquet-provided"
+Before it, if you have maven, you can add a native mirror by adding
+      <mirror>
+          <id>alimaven</id>
+          <mirrorOf>central</mirrorOf>
+          <name>aliyun maven</name>
+          <url>http://maven.aliyun.com/nexus/content/repositories/central/</url>
+      </mirror>
+(3) cp spark/dist/jars/scala-* apache-hive-2.3.3-bin/lib/
+    cp spark/dist/jars/spark-* apache-hive-2.3.3-bin/lib/
+    
+(4)Edit hive-site.xml by adding below
+    <!--spark -->
+    <property>
+        <name>hive.execution.engine</name>
+        <value>spark</value>
+    </property>
+    <property>
+        <name>hive.enable.spark.execution.engine</name>
+        <value>true</value>
+    </property>
+    <property>
+        <name>spark.home</name>
+        <value>/home/larry/project/back/spark-2.4.0-SNAPSHOT-bin-hadoop2-without-hive</value>
+    </property>
+    <!--sparkcontext -->
+    <property>
+        <name>spark.master</name>
+        <value>yarn-cluster</value>
+    </property>
+    <property>
+        <name>spark.serializer</name>
+        <value>org.apache.spark.serializer.KryoSerializer</value>
+    </property>
+    <property>
+        <name>spark.executor.memeory</name>
+        <value>1g</value>
+    </property>
+    <property>
+        <name>spark.driver.memeory</name>
+        <value>1g</value>
+    </property>
+    <property>
+        <name>spark.executor.cores</name>
+        <value>2</value>
+    </property>
+    <property>
+        <name>spark.executor.instances</name>
+        <value>4</value>
+    </property>
+    <property>
+      <name>spark.yarn.jars</name>
+      <value>hdfs://localhost:9000/spark-jars/*</value>
+    </property>
+(5)hdfs dfs -put spark-2.4.0-SNAPSHOT-bin-hadoop2-without-hive/jars/* /spark-jars/
+(6)test 
+select count(*) from record; 
+
+SELECT AVG(duration) AS `avg__duration`
+FROM `record`
+WHERE `age` = 37
+ORDER BY `avg__duration` DESC
+LIMIT 10000;
+
+
+
+
