@@ -55,7 +55,11 @@ Before it, if you have maven, you can add a native mirror by adding
       <value>hdfs://localhost:9000/spark-jars/*</value>
     </property>
 (5)hdfs dfs -put spark-2.4.0-SNAPSHOT-bin-hadoop2-without-hive/jars/* /spark-jars/
-(6)test 
+(6)vi .bashrc
+export PATH=~/tools/hadoop-2.8.3/bin:$PATH
+export SPARK_HOME=~/project/back/spark-2.4.0-SNAPSHOT-bin-hadoop2-without-hive
+
+(7)test 
 select count(*) from record; 
 
 SELECT AVG(duration) AS `avg__duration`
