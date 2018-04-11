@@ -17,4 +17,4 @@ and the corresponding code is below in sql.py
             coerce_float=coerce_float, parse_dates=parse_dates,
             chunksize=chunksize)
             
-and _is_table_name = pandas_sql.has_table(sql) will induce a error for hive
+and _is_table_name = pandas_sql.has_table(sql) will induce a error to hive, and it doesn't matter.
