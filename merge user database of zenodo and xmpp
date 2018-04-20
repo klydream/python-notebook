@@ -182,3 +182,22 @@
  ('tig_pubsub_items',),
  ('tig_hfu_slots',)]
  78 58
+ 
+ (3)add database 2 to database 1
+ \i database/postgresql-common-0.0.1.sql 
+\i database/postgresql-common-0.0.1.sql
+\i database/postgresql-common-0.0.2.sql
+\i database/postgresql-server-7.0.0.sql
+\i database/postgresql-server-7.1.0.sql
+\i database/postgresql-server-8.0.0.sql
+\i database/postgresql-muc-3.0.0.sql
+\i database/postgresql-pubsub-3.1.0.sql
+\i database/postgresql-pubsub-3.2.0.sql
+\i database/postgresql-pubsub-4.0.0.sql
+\i database/postgresql-http-api-2.0.0.sql
+
+(4)(121 rows)
+
+(5)merge accounts_user to tig_users
+
+ 
