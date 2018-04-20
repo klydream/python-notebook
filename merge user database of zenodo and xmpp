@@ -100,7 +100,7 @@
  ('sipstore_recordsip',),
  ('files_multipartobject_part',),
  ('alembic_version',)]
- 101 tables
+ 101 tables 58 system tables
  
  (2)Check the tigase's database schema
 [('pg_statistic',),
@@ -181,3 +181,4 @@
  ('tig_pubsub_subscriptions',),
  ('tig_pubsub_items',),
  ('tig_hfu_slots',)]
+ 78 58
