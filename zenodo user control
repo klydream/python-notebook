@@ -1,1 +1,44 @@
+(1) add file run.py to easily check the running of flask;
+(2) add 
+print("blueprints", app.blueprints)
+print("url_map", app.url_map)
+print("extensions", app.extensions)
+to check the modules of app;
+and we will find that the user control is by the module flask_security and invenio, Flask is reponsible for webserver, 
+and invenio is reponsible for initial of database and forms connecting to user.
+(3)I'm going to add some steps to add user data to another database when new user registration and modification of user 
+password
+(4)Zenodo call flask_security by user_register.html of function "url_for_security('register')"
+I add a new function 
+
+@blueprint.route('/signup/', methods=['POST', 'GET'])
+@anonymous_user_required
+def register():
+    """Load balancer ping view."""
+    if _security.confirmable or request.is_json:
+        form_class = _security.confirm_register_form
+    else:
+        form_class = _security.register_form
+
+    if request.is_json:
+        form_data = MultiDict(request.get_json())
+    else:
+        form_data = request.form
+
+    print(form_data)
+    return flask_views.register()
+ 
+ to frontpage views.
+ 
+and modify user_register.html from "url_for_security('register')" to url_for('zenodo_frontpage.register')
+
+and it doesn'g work. I think two '/signup/' is registered to the app.
+
+(5)Change '/signup/' to '/signup_test/'
+
+(6)Flask control file is defined by outer file.
+For example:
+SECURITY_REGISTERABLE = False
+THEME_HEADER_LOGIN_TEMPLATE = 'zenodo_frontpage/header_login.html'
+I define in config.py and it's valid
 
