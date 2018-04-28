@@ -199,5 +199,5 @@
 (4)(121 rows)
 
 (5)merge accounts_user to tig_users
-
+I think it's very dangerous to merge two databases, so I intend to stop this.
  
