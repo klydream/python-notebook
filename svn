@@ -16,5 +16,7 @@ admin = larry
 @larry = rw
 
 (7)svnserve -d -r /home/svn [--listen-host 192.168.1.16]
+edit /etc/rc.local
+svnserve -d -r /home/klydream/tools/svn/
 (8)killall svnserve
 ps aux | grep svnserve
