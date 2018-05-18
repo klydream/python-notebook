@@ -1,0 +1,1 @@
+nohup ~/anaconda3/bin/python ludolph/main.py myout.file 2>&1 &
