@@ -26,7 +26,7 @@ It's very slow that search on hive on spark, when hive build a spark session. so
   <!-- Hive Execution Parameters -->
   <property>
    <name>javax.jdo.option.ConnectionURL</name>
-    <value>jdbc:postgresql://39.107.65.158:5432/hivemeta</value>
+    <value>jdbc:postgresql://local:5432/test</value>
     <description>JDBC connect string for aJDBC metastore</description>
   </property>
   <property>
