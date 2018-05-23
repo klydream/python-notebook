@@ -91,3 +91,4 @@ It's very slow that search on hive on spark, when hive build a spark session. so
 (5)because the database is ready, so it's no need to modify it;
 (7)cope some package to directory jar
 postgresql-9.4.1212.jar, hive-hcatalog-core-2.3.3.jar
+(8)sbin/start-thriftserver.sh --master yarn
