@@ -1,0 +1,15 @@
+It's very easy to edit of front web by editting deposit_form.json, but I think it will be validated by some other config file
+except a url which is configured at 'https://www.zenodo.org/schemas/deposits/records/record-v1.0.0.json', so It's took me
+a lot of time to look the real configure location.
+At last, I found a application in file "jsonresolver/core.py:42"
+
+    def resolve(self, url):
+        """Resolve given URL and use regitered loader."""
+        if self.url_map is None:
+            self._build_url_map()
+        parts = urlsplit(url)
+        loader, args = self.url_map.bind(parts.netloc).match(parts.path)
+        return loader(**args)
+        
+ which indicates that it will look configure file at local location of "schemas/deposits/records/record-v1.0.0.json" and
+ web location of 'https://www.zenodo.org/schemas/deposits/records/record-v1.0.0.json'
