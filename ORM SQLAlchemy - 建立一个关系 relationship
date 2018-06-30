@@ -1,0 +1,55 @@
+relationship函数是sqlalchemy对关系之间提供的一种便利的调用方式, backref参数则对关系提供反向引用的声明
+
+1 背景
+
+如没有relationship，我们只能像下面这样调用关系数据
+ 
+ 
+
+如果在User中使用relationship定义addresses属性的话，
+
+addresses = relationship('Address')
+则我们可以直接在User对象中通过addresses属性获得指定用户的所有地址
+
+ 
+
+2 backref属性
+
+ 
+
+大致原理应该就是sqlalchemy在运行时对Address对象动态的设置了一个指向所属User对象的属性，这样就能在实际开发中使逻辑关系更加清晰，代码更加简洁了
+
+2 例子
+
+>>> from sqlalchemy import Column, Integer, String
+>>> class User(Base):
+...     __tablename__ = 'users'
+...
+...     id = Column(Integer, primary_key=True)
+...     name = Column(String)
+...     fullname = Column(String)
+...     password = Column(String)
+...
+...     def __repr__(self):
+...        return "<User(name='%s', fullname='%s', password='%s')>" % ( self.name, self.fullname, self.password)
+
+
+>>> from sqlalchemy import ForeignKey
+>>> from sqlalchemy.orm import relationship, backref
+
+>>> class Address(Base):
+...     __tablename__ = 'addresses'
+...     id = Column(Integer, primary_key=True)
+...     email_address = Column(String, nullable=False)
+...     user_id = Column(Integer, ForeignKey('users.id'))
+...
+...     user = relationship("User", backref=backref('addresses', order_by=id))
+...
+...     def __repr__(self):
+...         return "<Address(email_address='%s')>" % self.email_address
+
+
+ForeignKey表示，Addresses.user_id列的值应该等于users.id列中的值，即，users的主键
+relationship(), 它告诉 ORM ,Address类本身应该使用属性Address.user链接到User类
+relationship()的参数中有一个称为backref()的relationship()的子函数，反向提供详细的信息, 即在users中添加User对应的Address对象的集合，保存在User.addresses中
+两个互补关系, Address.user和User.addresses被称为一个双向关系，并且这是SQLAlchemy ORM的一个关键特性
