@@ -1,0 +1,99 @@
+	
+@contextmanager:Python实现with结构的好方法
+2016年10月25日 20:13:46
+阅读数：1655
+常见with结构
+
+常见的with结构是在进行文件操作时，比如
+
+# 中规中矩的写法
+f = open("test.txt", "w")
+f.write("hello world!")
+f.close()
+
+# 采用with结构
+with open("test.txt", "w") as f:
+  f.write("hello world!")
+
+这个结构的好处，一个是简洁，一个是当我们对文件操作的逻辑很长的时候，不会因为忘了关闭文件而造成不必要的错误。类似的，当我们在某些时候不希望遗忘一些重要的语句的时候，可以自己封装个with结构，比如关闭数据库链接等情况。
+一般实现方法
+
+with结构一般的实现方法是在定义类的时候重载__enter__方法和__exit__方法，比如我们可以通过如下代码来模拟一下上面两段代码前者到后者的转化
+
+# -*- coding: utf-8 -*-
+
+class myOpen():
+
+    def __init__(self, name, state):
+        self.f = open(name, state)
+
+    # 返回值是with...as...中as出来的东西，如下面的f
+    def __enter__(self):
+        return self.f
+
+    # 在with...as...语句块自动执行完之后执行
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.f.close()
+
+if __name__ == "__main__":
+    with myOpen("test.txt", "w") as f:
+        f.write("hello world!")
+
+@contextmanager方法
+
+好像上面这种方法实现起来with结构有那么一点点麻烦，那么就进入主题吧，有一种逼格又高，又简便的方法，先上代码，仍以打开文件为例：
+
+# -*- coding: utf-8 -*-
+
+from contextlib import contextmanager
+
+@contextmanager
+def myOpen(name, state):
+  try:
+    f = open(name, state)
+    yield f
+  finally:
+      f.close()
+
+if __name__ == "__main__":
+  with myOpen("test.txt", "w") as f:
+      f.write("hello world!")
+
+可以看出这里只要定义一个函数，然后在它的头部加上@contextmanager就好了，这个函数应该怎么定义呢？我们去源码里看一下就好，里面给出了详细的注释
+
+def contextmanager(func):
+    """@contextmanager decorator.
+
+    Typical usage:
+
+        @contextmanager
+        def some_generator(<arguments>):
+            <setup>
+            try:
+                yield <value>
+            finally:
+                <cleanup>
+
+    This makes this:
+
+        with some_generator(<arguments>) as <variable>:
+            <body>
+
+    equivalent to this:
+
+        <setup>
+        try:
+            <variable> = <value>
+            <body>
+        finally:
+            <cleanup>
+
+    """
+    @wraps(func)
+    def helper(*args, **kwds):
+        return GeneratorContextManager(func(*args, **kwds))
+    return helper
+
+通过注释我们可以看到，我们可以通过给一个try…finally…结构的函数头部加上@contextmanager就可以通过with…as…结构来调用它了，这样try块中yield的数据被as出来，finally块中的数据在with..as..块结束的时候被执行。
+
+这样写出来的代码是不是感觉很nice？
