@@ -2,3 +2,8 @@
 postgresql搜索还是在Elasticsearch本身搜索。
 如果在Elasticsearch里面搜索，又是什么时候更新的数据库？
 网上搜索Elasticsearch，postgresql可以通过某个插件实现数据同步，不过没有发现类似的插件。
+from elasticsearch import Elasticsearch
+es = Elasticsearch()
+result = es.search(index="_all",doc_type=None)
+可以直接运行，所以我认为Elasticsearch和postgresql应该是关联的。原因不详。
+找到了，通过index上传到了Elasticsearch
