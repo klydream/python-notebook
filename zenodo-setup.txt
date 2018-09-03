@@ -76,6 +76,9 @@ This command "sudo apt-get install libcairo2" will solve this problem
 sudo apt-get install libffi-dev
 
 (8) Install node.js library
+编辑 ~/.npmrc 加入下面内容
+registry = https://registry.npm.taobao.org
+
 (zenodo)$ sudo ./scripts/setup-npm.sh
 I met warning: sh: 1: node: not found
 try this: ln -s /usr/bin/nodejs  /usr/bin/node
