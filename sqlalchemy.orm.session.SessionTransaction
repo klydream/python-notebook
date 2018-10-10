@@ -1,0 +1,67 @@
+ class sqlalchemy.orm.session.SessionTransaction(session, parent=None, nested=False)
+
+    A Session-level transaction.
+
+    SessionTransaction is a mostly behind-the-scenes object not normally referenced directly by application code. 
+    It coordinates among multiple Connection objects, maintaining a database transaction for each one individually, 
+    committing or rolling them back all at once. It also provides optional two-phase commit behavior which can augment this coordination operation.
+
+    The Session.transaction attribute of Session refers to the current SessionTransaction object in use, 
+    if any. The SessionTransaction.parent attribute refers to the parent SessionTransaction 
+    in the stack of SessionTransaction objects. 
+    If this attribute is None, then this is the top of the stack. 
+    If non-None, then this SessionTransaction refers either to a so-called “subtransaction” or a “nested” transaction. 
+    A “subtransaction” is a scoping concept that demarcates an inner portion of the outermost “real” transaction. 
+    A nested transaction, which is indicated when the SessionTransaction.nested attribute is also True, 
+    indicates that this SessionTransaction corresponds to a SAVEPOINT.
+    
+     
+    Life Cycle
+
+    A SessionTransaction is associated with a Session in its default mode of autocommit=False immediately, 
+    associated with no database connections. 
+    As the Session is called upon to emit SQL on behalf of various Engine or Connection objects, 
+    a corresponding Connection and associated Transaction is added to a collection within the SessionTransaction object,
+    becoming one of the connection/transaction pairs maintained by the SessionTransaction. 
+    The start of a SessionTransaction can be tracked using the SessionEvents.after_transaction_create() event.
+
+    The lifespan of the SessionTransaction ends when the Session.commit(), 
+    Session.rollback() or Session.close() methods are called. At this point, 
+    the SessionTransaction removes its association with its parent Session. 
+    A Session that is in autocommit=False mode will create a new SessionTransaction to replace it immediately, 
+    whereas a Session that’s in autocommit=True mode will remain without a SessionTransaction until the Session.begin() 
+    method is called. 
+    The end of a SessionTransaction can be tracked using the SessionEvents.after_transaction_end() event.
+
+    Nesting and Subtransactions
+
+    Another detail of SessionTransaction behavior is that it is capable of “nesting”. 
+    This means that the Session.begin() method can be called while an existing SessionTransaction is already present, 
+    producing a new SessionTransaction that temporarily replaces the parent SessionTransaction. 
+    When a SessionTransaction is produced as nested, it assigns itself to the Session.transaction attribute, 
+    and it additionally will assign the previous SessionTransaction to its Session.parent attribute. 
+    The behavior is effectively a stack, where Session.transaction refers to the current head of the stack, 
+    and the SessionTransaction.parent attribute allows traversal up the stack until SessionTransaction.parent is None, 
+    indicating the top of the stack.
+
+    When the scope of SessionTransaction is ended via Session.commit() or Session.rollback(), 
+    it restores its parent SessionTransaction back onto the Session.transaction attribute.
+
+    The purpose of this stack is to allow nesting of Session.rollback() or Session.commit() 
+    calls in context with various flavors of Session.begin(). 
+    This nesting behavior applies to when Session.begin_nested() is used to emit a SAVEPOINT transaction, 
+    and is also used to produce a so-called “subtransaction” 
+    which allows a block of code to use a begin/rollback/commit sequence regardless of 
+    whether or not its enclosing code 
+    block has begun a transaction. The flush() method, whether called explicitly or via autoflush, 
+    is the primary consumer of the “subtransaction” feature, 
+    in that it wishes to guarantee that it works within in a transaction block 
+    regardless of whether or not the Session is in transactional mode when the method is called.
+
+    Note that the flush process that occurs within the “autoflush” feature as well as when the Session.
+    flush() method is used always creates a SessionTransaction object. This object is normally a subtransaction, 
+    unless the Session is in autocommit mode and no transaction exists at all, 
+    in which case it’s the outermost transaction. 
+    Any event-handling logic or other inspection logic needs to take into account 
+    whether a SessionTransaction is the outermost transaction, 
+    a subtransaction, or a “nested” / SAVEPOINT transaction.
