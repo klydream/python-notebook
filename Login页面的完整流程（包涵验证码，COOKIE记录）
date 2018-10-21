@@ -1,0 +1,261 @@
+
+Login页面的完整流程（包涵验证码，COOKIE记录）
+
+1.首先我们创建一个html页面取名为Login.htm在页面内建立如下控件并引用Jquery和Cookie JS
+
+代码如下（没有样式)
+复制代码
+
+<head>
+    <script src="Scripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script src="Scripts/Login.js" type="text/javascript"></script>
+    <title></title>
+</head>
+<body>
+    <input type="text" name="txt_UserName" id="txt_UserName" class="input1" />
+    <input type="password" name="txt_Pwd" id="txt_Pwd" class="input1" />
+    <input type="text" name="txt_Code" id="txt_Code" class="input2" />
+    <img src="ValidateCode.aspx" width="50" height="24" id="img_code" alt="看不清,请点击" style="cursor: pointer"
+        onclick="ReloadCheckCode();" /></div>
+    <input id="Button1" type="button" value="button" onclick="loginSubmit();" />
+    <img src="Images/login06.gif" width="104" height="32" onclick="loginSubmit();" /></div>
+    <input id="chkRemember" type="checkbox" />
+    <img src="Images/login07.gif" width="104" height="32" onclick="regit();" /></div>
+
+复制代码
+
+2.我们建立一个JS文件取名为Login.js,代码比较长，看注解
+复制代码
+
+$(function () {
+//首先判断是否有Cookie，记录登录if ($.cookie("chkRemember") == "true") {
+        $("#chkRemember").attr("checked", true);
+        var name = $.cookie("sp001_userName");
+        var pwd = $.cookie("sp001_passWord");
+        $("#txt_pwd").val($.cookie("sp001_passWord"));
+        $("#txt_UserName").val($.cookie("sp001_userName"));
+        $.ajax({
+            type: "POST",
+            url: "/Handler/LoginHandler.ashx?username=" + name + "&pwd=" + pwd + "&flag=1",
+            dataType: 'text', //返回string格式数据
+            cache: false,
+            data: '',
+            async: false, //设置同步
+            success: function (data) {
+                if (data == "1") {
+                    window.location.href = '/MainWeb.aspx';
+                }
+                if (data == "3") {
+                    alert('9月12后以后禁止登录');
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert(XMLHttpRequest.status);
+                alert("登陆失败，请联系管理员");
+            }
+        });
+    }
+    $("#txt_UserName").focus();
+    //按enter提交输入
+    document.onkeydown = function (e) {
+        var ev = document.all ? window.event : e;
+        if (ev.keyCode == 13) {
+            loginSubmit();
+        }
+    }
+})
+function ReloadCheckCode() {
+    var checkCode = document.getElementById("img_code");
+    var rand = Math.random();
+    checkCode.src = "/ValidateCode.aspx?randnum=" + rand;
+}
+function loginSubmit() {
+    var username = $("#txt_UserName").val();
+    var pwd = $("#txt_Pwd").val();
+    var code = $("#txt_Code").val();
+
+    if (username == "") {
+        alert('请输入用户名!')
+        // $("#msg").html('请输入用户名!')
+        $("#txt_UserName").focus();
+        return false;
+    }
+    if (pwd == "") {
+        alert('请输入密码!')
+        // $("#msg").html('请输入密码!')
+        $("#txt_pwd").focus();
+        return false;
+    }
+    if (code == "") {
+        alert('请输入验证码！')
+
+        $("#txt_code").focus();
+        return false;
+    }
+    $.ajax({
+        type: "POST",
+        url: "/Handler/LoginHandler.ashx?username=" + escape(username) + "&pwd=" + escape(pwd) + "&code=" + code,
+        dataType: 'text', //返回string格式数据
+        cache: false,
+        data: '',
+        async: false, //设置同步
+        success: function (data) {
+            if (data == "0") {
+                alert('您输入的用户名或密码有误!');
+                // $("#msg").html('您输入的用户名或密码有误!')
+                $("#txt_UserName").focus();
+            }
+            if (data == "1") {
+                if ($("#chkRemember").attr("checked")) {
+                    if (!($.cookie("chkRemember") == "true")) {
+                        $.cookie("chkRemember", "true", { expires: 30 }); // 存储一个带30天期限的 cookie
+                        $.cookie("sp001_userName", username, { expires: 30 });
+                        $.cookie("sp001_passWord", pwd, { expires: 30 });
+                        alert($.cookie("sp001_userName") + $.cookie("sp001_passWord"));
+                    }
+                }
+                else {
+                    if ($.cookie("chkRemember") == "true") {
+                        $.cookie("chkRemember", "true", { expires: -1 }); //清除
+                        $.cookie("sp001_userName", username, { expires: -1 });
+                        $.cookie("sp001_passWord", pwd, { expires: -1 });
+                    }
+                }
+                window.location.href = '/MainWeb.aspx';
+            }
+            if (data == "2") {
+                alert('您输入的验证码有误!')
+                //$("#msg").html('您输入的验证码有误!')
+                $("#txt_UserName").focus();
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+
+            alert(XMLHttpRequest.status);
+            alert("登陆失败，请联系管理员");
+        }
+    });
+}
+
+复制代码
+
+3.建立handler文件，文件内代码如下，session保存用户信息不多介绍
+复制代码
+
+  /// </summary>
+    public class LoginHandler : IHttpHandler, IRequiresSessionState  //Handler处理session必备
+    {
+        public void ProcessRequest(HttpContext context)
+        {
+            context.Response.ContentType = "text/plain";
+            //在9月12后禁止登录保护自身利益的代码
+            if (DateTime.Now.Month >= 9)
+            {
+                if (DateTime.Now.Day >= 13)
+                {
+                    context.Response.Write("3");
+                    return;
+                }
+            }
+//判断有Cookie自动登录，否为提交登录
+            if (context.Request.QueryString["flag"] == "1")
+            {
+                RememberLogin(context);
+            }
+            else
+            {
+                UserLogin(context);
+            }
+        }
+
+        public bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 用户登录
+        /// </summary>
+        /// <param name="context"></param>
+        public void UserLogin(HttpContext context)
+        {
+
+           
+            string UserName = HttpUtility.UrlDecode(context.Request.QueryString["username"]);
+
+            string Password = HttpUtility.UrlDecode(Common.DESEncrypt.Encrypt(context.Request.QueryString["pwd"])); 保存入库必需加密
+
+            string code = context.Request.QueryString["code"];
+
+            if (context.Session["CheckCode"].ToString().ToLower().Equals(code.ToLower()))
+            {
+                SessionJudge(UserName,context);
+            }
+            else
+            {
+                context.Response.Write("2");
+            }
+        }
+        public void RememberLogin(HttpContext context)
+        {
+            string UserName = HttpUtility.UrlDecode(context.Request.QueryString["username"]);
+            SessionJudge(UserName, context);
+        }
+        public void SessionJudge(string UserName, HttpContext context)
+        {
+            DALAccount dal = new DALAccount();
+            Account model = dal.FindBYNameAndPwd(UserName, context.Request.QueryString["pwd"]);
+
+            if (model != null)
+            {
+                Model.UserModel table = new Model.UserModel();
+                table.MainID = model.MainID;
+                table.LoginName = model.LoginName;
+                table.LoginPwd = model.LoginPwd;
+                context.Session["UserInfo"] = table;
+                context.Session["userId"] = model.LoginName;
+                context.Session["ip"] = context.Request.UserHostAddress;
+                context.Response.Write("1");
+            }
+            else
+            {
+                context.Response.Write("0");
+            }
+        }
+    }
+
+复制代码
+
+4.因为Cookie的问题所以最好在主框架页面加入注销换帐号的功能，代码如下
+复制代码
+
+<head runat="server">
+<script src="Scripts/jquery-1.7.1.min.js" type="text/javascript"></script>
+    <script src="Scripts/jquery.cookie.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    function CookClear() {
+        alert('afd');
+        $.cookie("chkRemember", "true", { expires: -1 }); //清除
+        $.cookie("sp001_userName", null, { expires: -1 });
+        $.cookie("sp001_passWord", null, { expires: -1 });
+        window.location.href = "/Login.htm";
+    }
+</script>
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+    <div>
+      <input id="Button2" type="button" value="注销" onclick="CookClear();" />
+    </div>
+    </form>
+</body>
+
+复制代码
+
+整个登录的流程就完成了，其中包括了cookie登录和对逾期不给登录的判断
