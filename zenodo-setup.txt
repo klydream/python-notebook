@@ -109,6 +109,10 @@ celery worker -A zenodo.celery -l INFO --purge beat
 and check task in celery by installing flower
 and start manage console by command:
 celery -A zenodo.celery flower
+and some index would not be added, you'd better add these by command
+
+(zenodo)$ zenodo index reindex -t recid
+(zenodo)$ zenodo index run -d
 
 (11) Run the Zenodo application:
 (zenodo)$ zenodo run -h 0.0.0.0 -p 5000
