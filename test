@@ -1,0 +1,32 @@
+import random
+from collections import Counter
+import time
+def actionsiter():
+    for i in range(1000000):
+        yield (0, random.randint(1,1000))
+if __name__ == "__main__":
+    t1 = time.time()
+    data = [x for x in actionsiter()]
+    count = Counter(data)  # 类型： <class 'collections.Counter'>
+    t2 = time.time()
+    print(t2 - t1)
+    print(count)
+
+
+import random
+from collections import Counter
+import time
+def actionsiter():
+    for i in range(1000000):
+        yield (0, random.randint(1,1000))
+if __name__ == "__main__":
+    t1 = time.time()
+    data = {}
+    for x in actionsiter():
+        if x in data:
+            data[x] += 1
+        else:
+            data.update({x:1})
+    t2 = time.time()
+    print(t2 - t1)
+    print(data)
