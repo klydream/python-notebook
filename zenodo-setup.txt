@@ -103,6 +103,12 @@ or edit ./scripts/setup-assets.sh as below
 
 (10) Run a Celery worker:
 (zenodo)$ celery worker -A zenodo.celery -l INFO --purge
+start Scheduler task by add -B or beat as below
+celery worker -A zenodo.celery -l INFO --purge -B
+celery worker -A zenodo.celery -l INFO --purge beat
+and check task in celery by installing flower
+and start manage console by command:
+celery -A zenodo.celery flower
 
 (11) Run the Zenodo application:
 (zenodo)$ zenodo run -h 0.0.0.0 -p 5000
