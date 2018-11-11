@@ -1,0 +1,7 @@
+scripts/tigase.sh start etc/tigase.conf
+scripts/tigase.sh stop etc/tigase.conf
+vi etc/tigase.conf 
+vi etc/config.tdsl
+cd tigase-server-8.0.0-SNAPSHOT-b5189/
+tar xzf tigase-server-dist-max.tar.gz
+wget http://build.tigase.org/nightlies/dists/latest/tigase-server-dist-max.tar.gz
