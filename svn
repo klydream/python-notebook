@@ -20,3 +20,73 @@ edit /etc/rc.local
 svnserve -d -r /home/klydream/tools/svn/
 (8)killall svnserve
 ps aux | grep svnserve
+
+
+qianyi
+root@NGINX-APACHE-SVN pro]# pwd
+/var/www/html/svn/pro
+[root@NGINX-APACHE-SVN pro]# svnadmin dump /var/www/html/svn/pro/ >/nc/pro.dump
+
+[root@NGINX-APACHE-SVN nc]# ll -h pro.dump 
+-rw-r--r-- 1 root root 2.1G Aug  6 23:51 pro.dump
+#转存文件pro.dump，这个转存文件比原文件的版本库本身大很多倍，因为在转存文件中，每个文件的每个版本都以完整的文本形式保存下来。
+
+[root@NGINX-APACHE-SVN nc]# du -sh /var/www/html/svn/pro/
+1.2G    /var/www/html/svn/pro/
+[root@NGINX-APACHE-SVN nc]# ls /var/www/html/svn/pro/
+conf  db  format  hooks  locks  README.txt
+
+[root@NGINX-APACHE-SVN nc]# du -sh /home/pro/
+4.3G    /home/pro/
+
+将pro.dump文件拷贝到新的服务机上，然后创建新的版本库，将pro.dump导入。
+复制代码
+
+[root@new-svn nc]# svnadmin create pro
+[root@new-svn nc]# tree pro
+pro
+├── conf
+│   ├── authz
+│   ├── passwd
+│   └── svnserve.conf
+├── db
+│   ├── current
+│   ├── format
+│   ├── fsfs.conf
+│   ├── fs-type
+│   ├── min-unpacked-rev
+│   ├── rep-cache.db
+│   ├── revprops
+│   │   └── 0
+│   │       └── 0
+│   ├── revs
+│   │   └── 0
+│   │       └── 0
+│   ├── transactions
+│   ├── txn-current
+│   ├── txn-current-lock
+│   ├── txn-protorevs
+│   ├── uuid
+│   └── write-lock
+├── format
+├── hooks
+│   ├── post-commit.tmpl
+│   ├── post-lock.tmpl
+│   ├── post-revprop-change.tmpl
+│   ├── post-unlock.tmpl
+│   ├── pre-commit.tmpl
+│   ├── pre-lock.tmpl
+│   ├── pre-revprop-change.tmpl
+│   ├── pre-unlock.tmpl
+│   └── start-commit.tmpl
+├── locks
+│   ├── db.lock
+│   └── db-logs.lock
+└── README.txt
+
+10 directories, 28 files
+
+复制代码
+
+[root@new-svn nc]# svnadmin load /nc/pro </nc/pro.dump 
+
