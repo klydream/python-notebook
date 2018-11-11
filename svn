@@ -1,4 +1,4 @@
-(1)sudo apt-get install subversion
+(1)sudo apt-get install subversion port 3690
 (2)mkdir tools/svn
 mkdir tools/svn/repository
 chmod -R 777 tools/svn/repository
