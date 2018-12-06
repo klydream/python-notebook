@@ -94,3 +94,6 @@ postgresql-9.4.1212.jar, hive-hcatalog-core-2.3.3.jar
 (8)vi spark-env.sh
 add export HADOOP_CONF_DIR=/home/ubuntu/hadoop-2.8.3/etc
 (9)sbin/start-thriftserver.sh --master yarn
+(10)Maybe should start metastore server, because it'll be error without it.
+connect metadata sql of postgresql
+hive --service metastore -v
